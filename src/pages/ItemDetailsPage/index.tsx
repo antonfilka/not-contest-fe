@@ -17,7 +17,7 @@ import { useCartStore } from "@/store/cartStore";
 import NumberFlow from "@number-flow/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatWithThousandDots } from "@/lib/utils";
-import { useTonConnectUI } from "@tonconnect/ui-react";
+import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
 
 const HAPTIC_FORCE = "medium";
 
@@ -227,6 +227,8 @@ export const ItemDetailsPage: FC = () => {
               Buy now
             </Button>
             {/* </CartDrawer> */}
+
+            <TonConnectButton className="button-connected" />
           </div>
         )}
       </motion.div>
