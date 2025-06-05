@@ -10,8 +10,6 @@ import {
   retrieveLaunchParams,
   emitEvent,
   viewport,
-  closingBehavior,
-  themeParams,
   swipeBehavior,
 } from "@telegram-apps/sdk-react";
 
@@ -22,11 +20,13 @@ export async function init(options: {
   debug: boolean;
   eruda: boolean;
   mockForMacOS: boolean;
+  supportsViewport: boolean;
 }): Promise<void> {
   // Set @telegram-apps/sdk-react debug mode and initialize it.
   setDebug(options.debug);
   initSDK();
 
+  console.log(window);
   // Add Eruda
   options.eruda &&
     void import("eruda").then(({ default: eruda }) => {
@@ -72,19 +72,12 @@ export async function init(options: {
 
   if (backButton.mount.isAvailable()) {
     backButton.mount();
-  }
-
-  if (closingBehavior.mount.isAvailable()) {
-    closingBehavior.mount();
-    closingBehavior.enableConfirmation();
+  } else {
+    throw new Error("Not telegram client");
   }
 
   if (miniApp.mountSync.isAvailable()) {
     miniApp.mountSync();
-  }
-
-  if (miniApp.bindCssVars.isAvailable()) {
-    miniApp.bindCssVars();
   }
 
   if (miniApp.setHeaderColor.isAvailable()) {
@@ -95,24 +88,12 @@ export async function init(options: {
     miniApp.setBackgroundColor("#000000");
   }
 
-  if (viewport.mount.isAvailable()) {
+  if (options.supportsViewport && viewport?.mount?.isAvailable()) {
     await viewport.mount();
-  }
 
-  if (viewport.requestFullscreen.isAvailable()) {
-    await viewport.requestFullscreen();
-  }
-
-  if (viewport.bindCssVars.isAvailable()) {
-    viewport.bindCssVars();
-  }
-
-  if (themeParams.mountSync.isAvailable()) {
-    themeParams.mountSync();
-  }
-
-  if (themeParams.bindCssVars.isAvailable()) {
-    themeParams.bindCssVars();
+    if (viewport.requestFullscreen.isAvailable()) {
+      await viewport.requestFullscreen();
+    }
   }
 
   if (swipeBehavior.mount.isAvailable()) {
@@ -123,10 +104,7 @@ export async function init(options: {
     swipeBehavior.disableVertical();
   }
 
-  // if (miniApp.ready.isAvailable()) {
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-  //
-  // }
-
-  miniApp.ready();
+  if (miniApp.ready.isAvailable()) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
 }

@@ -1,14 +1,100 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="theme-color" content="#000000"/>
-    <title>Telegram Mini App</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>Notcoin Store Contest</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div
+      id="splashscreen"
+      class="splashscreen"
+      style="
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 1s ease;
+        background-color: black;
+      "
+    >
+      <div class="spinner">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script src="/src/index.tsx" type="module"></script>
   </body>
+  <style>
+    .hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 44.8px;
+      height: 44.8px;
+      animation: spinner-y0fdc1 2s infinite ease;
+      transform-style: preserve-3d;
+    }
+
+    .spinner > div {
+      background-color: rgba(255, 255, 255, 0.2);
+      height: 100%;
+      position: absolute;
+      width: 100%;
+      border: 2.2px solid #ffffff;
+    }
+
+    .spinner div:nth-of-type(1) {
+      transform: translateZ(-22.4px) rotateY(180deg);
+    }
+
+    .spinner div:nth-of-type(2) {
+      transform: rotateY(-270deg) translateX(50%);
+      transform-origin: top right;
+    }
+
+    .spinner div:nth-of-type(3) {
+      transform: rotateY(270deg) translateX(-50%);
+      transform-origin: center left;
+    }
+
+    .spinner div:nth-of-type(4) {
+      transform: rotateX(90deg) translateY(-50%);
+      transform-origin: top center;
+    }
+
+    .spinner div:nth-of-type(5) {
+      transform: rotateX(-90deg) translateY(50%);
+      transform-origin: bottom center;
+    }
+
+    .spinner div:nth-of-type(6) {
+      transform: translateZ(22.4px);
+    }
+
+    @keyframes spinner-y0fdc1 {
+      0% {
+        transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+      }
+
+      50% {
+        transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+      }
+
+      100% {
+        transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+      }
+    }
+  </style>
 </html>

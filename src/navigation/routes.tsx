@@ -1,23 +1,19 @@
-import type { ComponentType, JSX } from "react";
-
 import { HomePage } from "@/pages/HomePage";
-import { InitDataPage } from "@/pages/InitDataPage.tsx";
-import { LaunchParamsPage } from "@/pages/LaunchParamsPage.tsx";
-import { ThemeParamsPage } from "@/pages/ThemeParamsPage.tsx";
-import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
+import { ProfilePage } from "@/pages/ProfilePage";
+import { RouteProps } from "react-router";
+import { ItemDetailsPage } from "@/pages/ItemDetailsPage";
 
-interface Route {
-  path: string;
-  Component: ComponentType;
-  title?: string;
-  icon?: JSX.Element;
-}
+export const APP_ROUTES = {
+  HOME: "/",
+  PROFILE: "/profile",
+  ITEM_DETAILS: "/item-details",
+};
 
-export const routes: Route[] = [
-  { path: "/", Component: HomePage },
-  { path: "/init-data", Component: InitDataPage, title: "Init Data" },
-  // { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
-  // { path: '/launch-params', Component: LaunchParamsPage, title: 'Launch Params' },
+export const routes: RouteProps[] = [
+  { path: APP_ROUTES.HOME, Component: HomePage },
+  { path: APP_ROUTES.PROFILE, Component: ProfilePage },
+  { path: APP_ROUTES.ITEM_DETAILS + "/:id", Component: ItemDetailsPage },
+
   // {
   //   path: '/ton-connect',
   //   Component: TONConnectPage,

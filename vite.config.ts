@@ -6,7 +6,6 @@ import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: "/",
   css: {
     preprocessorOptions: {
       scss: {
@@ -26,7 +25,7 @@ export default defineConfig({
   publicDir: "./public",
   server: {
     host: true,
-    allowedHosts: ["7e6c-34-118-112-64.ngrok-free.app"],
+    allowedHosts: ["rnsjx-34-118-112-64.a.free.pinggy.link"],
   },
   resolve: {
     alias: {
