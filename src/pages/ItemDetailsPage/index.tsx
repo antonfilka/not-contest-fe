@@ -17,7 +17,11 @@ import { useCartStore } from "@/store/cartStore";
 import NumberFlow from "@number-flow/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatWithThousandDots } from "@/lib/utils";
-import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
+import {
+  TonConnectButton,
+  useTonConnectUI,
+  useTonWallet,
+} from "@tonconnect/ui-react";
 
 const HAPTIC_FORCE = "medium";
 
@@ -25,6 +29,7 @@ export const ItemDetailsPage: FC = () => {
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const params = useParams();
 
+  const wallet = useTonWallet();
   const [tonConnectUI, setOptions] = useTonConnectUI();
 
   const { data = [], isLoading } = useCatalogue();
@@ -219,16 +224,29 @@ export const ItemDetailsPage: FC = () => {
               )}
             </AnimatePresence>
             {/* <CartDrawer> */}
-            <Button
-              className="flex-1 bg-foreground text-background"
-              disabled={currentItem?.left === 0}
-              onClick={() => tonConnectUI.modal.open()}
-            >
-              Buy now
-            </Button>
+            {wallet && (
+              <Button
+                className="flex-1 bg-foreground text-background"
+                disabled={currentItem?.left === 0}
+                onClick={() =>
+                  tonConnectUI.sendTransaction({
+                    validUntil: Math.floor(Date.now() / 1000) + 120, // 120 sec
+                    messages: [
+                      {
+                        address:
+                          "EQBBJBB3HagsujBqVfqeDUPJ0kXjgTPLWPFFffuNXNiJL0aA",
+                        amount: "20000000",
+                      },
+                    ],
+                  })
+                }
+              >
+                Buy now
+              </Button>
+            )}
             {/* </CartDrawer> */}
 
-            <TonConnectButton className="button-connected" />
+            {!wallet && <TonConnectButton className="button-connected" />}
           </div>
         )}
       </motion.div>
