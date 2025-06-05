@@ -23,7 +23,7 @@ export const TONConnectPage: FC = () => {
     return (
       <Page>
         <Placeholder
-          className={e("placeholder")}
+          className="placeholder"
           header="TON Connect"
           description={
             <>
