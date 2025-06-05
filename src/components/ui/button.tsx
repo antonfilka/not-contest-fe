@@ -9,7 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground cursor-pointer",
+        default:
+          "bg-primary text-primary-foreground cursor-pointer active:scale-98",
       },
       size: {
         default: "h-[50px] py-[14px] has-[>svg]:px-3 rounded-[12px]",

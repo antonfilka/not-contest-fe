@@ -6,6 +6,9 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import "./swiperPagination.css";
 import { formatWithThousandDots } from "@/lib/utils";
+import { motion, useIsPresent } from "framer-motion";
+import { NavLink } from "react-router";
+import { APP_ROUTES } from "@/navigation/routes";
 
 interface ItemCardProps {
   data: ShopItem;
@@ -16,7 +19,12 @@ const ItemCard = (props: ItemCardProps) => {
   const { data, isChecked } = props;
 
   return (
-    <>
+    <NavLink
+      key={data.id}
+      to={APP_ROUTES.ITEM_DETAILS + "/" + data.id}
+      viewTransition
+      className="relative flex flex-col items-center gap-[8px] w-full min-w-full"
+    >
       <Swiper
         spaceBetween={2}
         slidesPerView={1}
@@ -50,7 +58,7 @@ const ItemCard = (props: ItemCardProps) => {
           <span className="text-foreground opacity-50">NOT</span>
         </p>
       </div>
-    </>
+    </NavLink>
   );
 };
 

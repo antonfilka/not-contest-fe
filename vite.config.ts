@@ -25,7 +25,7 @@ export default defineConfig({
   publicDir: "./public",
   server: {
     host: true,
-    allowedHosts: ["rnsjx-34-118-112-64.a.free.pinggy.link"],
+    allowedHosts: ["rnwyx-34-118-112-64.a.free.pinggy.link"],
   },
   resolve: {
     alias: {

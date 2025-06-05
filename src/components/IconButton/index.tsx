@@ -6,10 +6,11 @@ interface IconButtonProps {
   disabled?: boolean;
   icon: "cart" | "search" | "share" | "close" | "remove" | "minus" | "plus";
   className?: string;
+  ariaLabel?: string;
 }
 
 const IconButton = (props: IconButtonProps) => {
-  const { icon, disabled } = props;
+  const { icon, disabled, ariaLabel } = props;
 
   const isDark = useSignal(isThemeParamsDark);
 
@@ -17,6 +18,7 @@ const IconButton = (props: IconButtonProps) => {
     <button
       className="cursor-pointer"
       style={{ opacity: disabled ? 0.5 : 1 }}
+      ariaLabel={ariaLabel}
       {...props}
     >
       {icon === "search" && (

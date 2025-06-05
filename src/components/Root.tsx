@@ -1,7 +1,7 @@
 import { queryClient } from "@/api/queryClient";
 import { App } from "@/components/App.tsx";
 import { ErrorBoundary } from "@/components/ErrorBoundary.tsx";
-import { publicUrl } from "@/lib/publicUrl";
+import { publicUrl } from "@/lib/utils";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
@@ -33,7 +33,9 @@ export function Root() {
             manifestUrl={publicUrl("tonconnect-manifest.json")}
           >
             <App />
-            {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
+            {import.meta.env.DEV && (
+              <ReactQueryDevtools initialIsOpen={false} />
+            )}
           </TonConnectUIProvider>
         </QueryClientProvider>
       </BrowserRouter>

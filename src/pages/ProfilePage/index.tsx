@@ -46,7 +46,7 @@ export const ProfilePage: FC = () => {
     const currentChunk = Math.floor(scrollOffset / HAPTIC_SCROLL_INTERVAL);
 
     if (currentChunk !== lastHapticChunkRef.current) {
-      hapticFeedback.impactOccurred("rigid");
+      hapticFeedback.impactOccurred("medium");
       lastHapticChunkRef.current = currentChunk;
     }
 
@@ -100,6 +100,12 @@ export const ProfilePage: FC = () => {
           </h1>
         </div>
 
+        {combinedLoading && (
+          <div className="flex flex-1 items-center justify-center py-20">
+            <div className="w-8 h-8 border-4 border-foreground border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
         {combinedData.length === 0 && !combinedLoading && (
           <div className="flex-1 flex flex-col items-center justify-center gap-[8px]">
             <p className="text-[26px] leading-[32px] text-foreground font-[600] text-center">
@@ -107,7 +113,7 @@ export const ProfilePage: FC = () => {
             </p>
             <Link
               to={APP_ROUTES.HOME}
-              className="text-[17px] leading-[22px] font-[400] text-center text-[rgba(255, 255, 255, 0.5)]"
+              className="text-[17px] leading-[22px] font-[400] text-center text-[rgba(255,255,255,0.5)]"
               viewTransition
             >
               Let’s change that

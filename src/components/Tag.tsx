@@ -1,4 +1,3 @@
-import React from "react";
 import { Badge } from "./ui/badge";
 import { isThemeParamsDark, useSignal } from "@telegram-apps/sdk-react";
 

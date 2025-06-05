@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { APP_ROUTES } from "@/navigation/routes";
 import { Link } from "./Link/Link";
 import { formatWithThousandDots } from "@/lib/utils";
@@ -11,40 +12,53 @@ interface HistoryItemProps {
   price: number;
   timestamp: number;
 }
-const HistoryItem = (props: HistoryItemProps) => {
-  const { image, name, type, price, timestamp, currency, id } = props;
 
-  const date = new Date(timestamp * 1000);
+const HistoryItem = ({
+  id,
+  image,
+  name,
+  type,
+  currency,
+  price,
+  timestamp,
+}: HistoryItemProps) => {
+  const formattedDate = useMemo(() => {
+    const date = new Date(timestamp * 1000);
+    const day = date.getDate();
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = `'${String(date.getFullYear()).slice(-2)}`;
+    return `${day} ${month} ${year}`;
+  }, [timestamp]);
 
-  const day = date.getDate();
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const year = `'${String(date.getFullYear()).slice(-2)}`;
-
-  const formattedDate = `${day} ${month} ${year}`;
+  const itemLink = `${APP_ROUTES.ITEM_DETAILS}/${id}`;
 
   return (
     <Link
-      to={APP_ROUTES.ITEM_DETAILS + "/" + id}
+      to={itemLink}
       className="flex h-[68px] w-full items-center"
       viewTransition
+      aria-label={`Go to details for ${name}`}
     >
       <img
         src={image}
-        className="h-[60px] rounded-[12px] aspect-square mr-[12px]"
+        alt={name}
+        className="h-[60px] w-[60px] rounded-[12px] object-cover mr-[12px]"
       />
-      <div className="flex-1 flex flex-col items-start justify-center">
-        <p className="text-[12px] font-[600] leading-[14px] text-[rgba(255, 255, 255, 0.5)]">
+
+      <div className="flex-1 flex flex-col justify-center overflow-hidden">
+        <p className="text-[12px] font-[600] leading-[14px] text-muted truncate">
           {type}
         </p>
-        <p className="text-[17px] font-[600] leading-[24px] text-foreground">
+        <p className="text-[17px] font-[600] leading-[24px] text-foreground truncate">
           {name}
         </p>
       </div>
-      <div className="flex flex-col items-end justify-center">
-        <p className="text-[12px] font-[600] leading-[14px] text-[rgba(255, 255, 255, 0.5)]">
+
+      <div className="flex flex-col items-end justify-center text-right">
+        <p className="text-[12px] font-[600] leading-[14px] text-muted">
           {formattedDate}
         </p>
-        <p className="text-[17px] font-[600] leading-[24px] text-foreground text-right">
+        <p className="text-[17px] font-[600] leading-[24px] text-foreground">
           {formatWithThousandDots(price)} {currency}
         </p>
       </div>

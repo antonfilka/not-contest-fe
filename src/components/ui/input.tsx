@@ -23,7 +23,7 @@ const Input = ({ className, type, onDeleteClick, ...props }: InputProps) => {
         type={type}
         data-slot="input"
         className={cn(
-          "placeholder:text-[rgba(0, 0, 0, 0.5)] w-full rounded-[10px] pl-[54px] py-[7px] outline-none",
+          "placeholder:text-white placeholder:opacity-50 w-full rounded-[10px] pl-[54px] py-[7px] outline-none",
           className,
         )}
         style={{ backgroundColor: "var(--gray)" }}

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
-export function useSwipeBack(edgeWidth = 30, minSwipeDistance = 80) {
+function useSwipeBack(edgeWidth = 30, minSwipeDistance = 80) {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,3 +45,5 @@ export function useSwipeBack(edgeWidth = 30, minSwipeDistance = 80) {
     };
   }, [navigate, edgeWidth, minSwipeDistance]);
 }
+
+export default useSwipeBack;
