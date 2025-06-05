@@ -30,9 +30,7 @@ export function Root() {
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
           <TonConnectUIProvider
-            manifestUrl={
-              "https://rnsjx-34-118-112-64.a.free.pinggy.link/tonconnect-manifest.json"
-            }
+            manifestUrl={publicUrl("tonconnect-manifest.json")}
           >
             <App />
             {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
