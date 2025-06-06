@@ -46,7 +46,7 @@ const HistoryItem = ({
       />
 
       <div className="flex-1 flex flex-col justify-center overflow-hidden">
-        <p className="text-[12px] font-[600] leading-[14px] text-muted truncate">
+        <p className="text-[12px] font-[600] leading-[14px] text-black dark:text-white opacity-50 truncate">
           {type}
         </p>
         <p className="text-[17px] font-[600] leading-[24px] text-foreground truncate">
@@ -55,7 +55,7 @@ const HistoryItem = ({
       </div>
 
       <div className="flex flex-col items-end justify-center text-right">
-        <p className="text-[12px] font-[600] leading-[14px] text-muted">
+        <p className="text-[12px] font-[600] leading-[14px] text-black dark:text-white opacity-50 ">
           {formattedDate}
         </p>
         <p className="text-[17px] font-[600] leading-[24px] text-foreground">

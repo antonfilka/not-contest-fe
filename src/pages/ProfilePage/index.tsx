@@ -1,4 +1,4 @@
-import { type FC, useMemo, useRef, useState } from "react";
+import { type FC, useEffect, useMemo, useRef, useState } from "react";
 import { hapticFeedback, retrieveLaunchParams } from "@telegram-apps/sdk-react";
 import { FixedSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -10,19 +10,30 @@ import { useCatalogue } from "@/api/queries/useCatalogue";
 import { Link } from "@/components/Link/Link";
 import { APP_ROUTES } from "@/navigation/routes";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
+import { useAppStore } from "@/store/appStore";
 
 export const ProfilePage: FC = () => {
-  const { data: historyData = [], isLoading: hostoryLoading } = useHistory();
+  const hasCompletedPayments = useAppStore(
+    (state) => state.hasCompletedPayments,
+  );
+
+  const {
+    data: historyData = [],
+    isLoading: historyLoading,
+    refetch,
+  } = useHistory(!hasCompletedPayments);
   const { data: catalogData = [], isLoading: catalogLoading } = useCatalogue();
 
   const [showTopGradient, setShowTopGradient] = useState(false);
   const [showBottomGradient, setShowBottomGradient] = useState(true);
 
+  const navigate = useNavigate();
   const listRef = useRef<any>(null);
 
   const combinedLoading = useMemo(
-    () => hostoryLoading || catalogLoading,
-    [hostoryLoading, catalogLoading],
+    () => historyLoading || catalogLoading,
+    [historyLoading, catalogLoading],
   );
 
   const combinedData = useMemo(() => {
@@ -63,8 +74,12 @@ export const ProfilePage: FC = () => {
     }
   };
 
+  useEffect(() => {
+    refetch();
+  }, [hasCompletedPayments]);
+
   if (!lp) {
-    return <Page>Profile</Page>;
+    navigate(APP_ROUTES.HOME);
   }
 
   return (
@@ -113,7 +128,7 @@ export const ProfilePage: FC = () => {
             </p>
             <Link
               to={APP_ROUTES.HOME}
-              className="text-[17px] leading-[22px] font-[400] text-center text-[rgba(255,255,255,0.5)]"
+              className="text-[17px] leading-[22px] font-[400] text-center text-black dark:text-white opacity-50"
               viewTransition
             >
               Let’s change that
@@ -121,7 +136,7 @@ export const ProfilePage: FC = () => {
           </div>
         )}
 
-        {combinedData.length > 0 && (
+        {combinedData.length > 0 && !combinedLoading && (
           <>
             <div className="w-full min-h-[56px] flex items-center justify-start">
               <h3 className="text-[20px] leading-[24px] text-foreground font-[600]">

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ComponentProps, useEffect, useRef } from "react";
+import { ComponentProps } from "react";
 
 interface InputProps extends ComponentProps<"input"> {
   onDeleteClick?: () => void;
@@ -8,22 +8,13 @@ interface InputProps extends ComponentProps<"input"> {
 const Input = ({ className, type, onDeleteClick, ...props }: InputProps) => {
   const deleteButtonVisible = !!props.value;
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
-
   return (
     <div className="relative h-[36px] w-full">
       <input
-        ref={inputRef}
         type={type}
         data-slot="input"
         className={cn(
-          "placeholder:text-white placeholder:opacity-50 w-full rounded-[10px] pl-[54px] py-[7px] outline-none",
+          "placeholder:text-[rgba(0, 0, 0, 0.5)] w-full rounded-[10px] pl-[54px] py-[7px] outline-none",
           className,
         )}
         style={{ backgroundColor: "var(--gray)" }}

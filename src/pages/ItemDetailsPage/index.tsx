@@ -95,7 +95,7 @@ export const ItemDetailsPage: FC = () => {
   return (
     <Page back={true}>
       {isLoading && (
-        <div className="flex flex-1 items-center justify-center py-20">
+        <div className="h-full flex flex-1 items-center justify-center py-20">
           <div className="w-8 h-8 border-4 border-foreground border-t-transparent rounded-full animate-spin" />
         </div>
       )}

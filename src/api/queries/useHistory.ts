@@ -2,14 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserHistory, fetchEmptyHistory } from "../axios/history";
 import { PurchaseRecord } from "../types/history";
 
-export const useHistory = () =>
+export const useHistory = (loadEmpty = true) =>
   useQuery<PurchaseRecord[]>({
     queryKey: ["purchaseHistory"],
     queryFn: async () => {
-      try {
-        return await fetchUserHistory();
-      } catch {
+      if (loadEmpty) {
         return await fetchEmptyHistory();
+      } else {
+        return await fetchUserHistory();
       }
     },
   });

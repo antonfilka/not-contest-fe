@@ -108,7 +108,7 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
                 <p className="text-foreground text-[26px] leading-[32px] font-[600]">
                   Cart’s cold
                 </p>
-                <p className="text-[17px] leading-[22px] font-[400] text-[rgba(255,255,255,0.5)]">
+                <p className="text-[17px] leading-[22px] font-[400] text-black dark:text-white opacity-50 ">
                   No items yet
                 </p>
               </motion.div>
@@ -146,7 +146,7 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
                 )}
                 {paymentStatus === "pending" && (
                   <>
-                    Waiting for payment{" "}
+                    Waiting for payment (demo)
                     <span className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin animation-duration-[600ms]" />
                   </>
                 )}

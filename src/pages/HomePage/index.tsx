@@ -75,7 +75,7 @@ export const HomePage: FC = () => {
             <p className="text-[26px] text-foreground font-[600] leading-[32px] self-center mb-[8px]">
               Not Found
             </p>
-            <p className="text-[17px] text-white opacity-50 font-[400] leading-[22px] self-center">
+            <p className="text-[17px] text-black dark:text-white opacity-50 font-[400] leading-[22px] self-center">
               This style doesn’t exist
             </p>
           </motion.div>

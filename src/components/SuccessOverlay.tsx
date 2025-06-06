@@ -19,14 +19,14 @@ const SuccessOverlay = () => {
         src={ConfettiImage}
         className="w-[320px] h-[320px] mb-[24px]"
       />
-      <p className="text-[36px] font-[600] leading-[36px] text-foreground mb-[12px]">
+      <p className="text-[36px] font-[600] leading-[36px] text-white mb-[12px]">
         You Got It!
       </p>
-      <p className="text-[17px] font-[400] leading-[22px] text-foreground mb-[60px]">
+      <p className="text-[17px] font-[400] leading-[22px] text-white mb-[60px]">
         Your purchase is on the way
       </p>
       <Button
-        className="w-[calc(100%-32px)] h-[50px] bg-foreground text-background text-[17px] font-[600]"
+        className="w-[calc(100%-32px)] h-[50px] bg-white text-black text-[17px] font-[600]"
         onClick={() => setPaymentStatus("none")}
       >
         Awesome
