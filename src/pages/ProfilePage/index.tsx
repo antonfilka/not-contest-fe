@@ -1,22 +1,25 @@
 import { type FC, useEffect, useMemo, useRef, useState } from "react";
-import { hapticFeedback, retrieveLaunchParams } from "@telegram-apps/sdk-react";
+import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
 import { FixedSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Page } from "@/components/Page.tsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useHistory } from "@/api/queries/useHistory";
-import HistoryItem from "@/components/HistoryItem";
+import HistoryItem from "@/pages/ProfilePage/components/HistoryItem";
 import { useCatalogue } from "@/api/queries/useCatalogue";
-import { Link } from "@/components/Link/Link";
+import { Link } from "@/components/Link";
 import { APP_ROUTES } from "@/navigation/routes";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { useAppStore } from "@/store/appStore";
+import useHaptic from "@/hooks/useHaptic";
+import useTelegram from "@/hooks/useTelegram";
 
 export const ProfilePage: FC = () => {
   const hasCompletedPayments = useAppStore(
     (state) => state.hasCompletedPayments,
   );
+  const { mediumHaptic, isHapticSupported } = useHaptic();
 
   const {
     data: historyData = [],
@@ -48,7 +51,7 @@ export const ProfilePage: FC = () => {
     });
   }, [historyData, catalogData]);
 
-  const lp = useMemo(() => retrieveLaunchParams(), []);
+  const { launchParams } = useTelegram();
 
   const lastHapticChunkRef = useRef(0);
   const HAPTIC_SCROLL_INTERVAL = 68;
@@ -57,7 +60,7 @@ export const ProfilePage: FC = () => {
     const currentChunk = Math.floor(scrollOffset / HAPTIC_SCROLL_INTERVAL);
 
     if (currentChunk !== lastHapticChunkRef.current) {
-      hapticFeedback.impactOccurred("medium");
+      mediumHaptic();
       lastHapticChunkRef.current = currentChunk;
     }
 
@@ -78,12 +81,12 @@ export const ProfilePage: FC = () => {
     refetch();
   }, [hasCompletedPayments]);
 
-  if (!lp) {
+  if (!launchParams) {
     navigate(APP_ROUTES.HOME);
   }
 
   return (
-    <Page>
+    <Page back={true} className="px-[16px]">
       <motion.div
         className="relative w-full flex flex-col h-full items-center"
         variants={{
@@ -98,19 +101,19 @@ export const ProfilePage: FC = () => {
       >
         <div className="min-h-[232px] flex flex-col items-center justify-center gap-[8px]">
           <Avatar className="size-[120px]">
-            <AvatarImage src={lp.tgWebAppData?.user?.photo_url} />
+            <AvatarImage src={launchParams.tgWebAppData?.user?.photo_url} />
             <AvatarFallback>
               <p className="text-[34px] font-[600]">
-                {lp.tgWebAppData?.user?.first_name[0] || ""}
-                {lp.tgWebAppData?.user?.last_name
-                  ? lp.tgWebAppData?.user?.last_name[0]
+                {launchParams.tgWebAppData?.user?.first_name[0] || ""}
+                {launchParams.tgWebAppData?.user?.last_name
+                  ? launchParams.tgWebAppData?.user?.last_name[0]
                   : ""}
               </p>
             </AvatarFallback>
           </Avatar>
           <h1 className="text-[26px] text-foreground font-[600] leading-[32px]">
-            {lp.tgWebAppData?.user?.first_name ||
-              lp.tgWebAppData?.user?.username ||
+            {launchParams.tgWebAppData?.user?.first_name ||
+              launchParams.tgWebAppData?.user?.username ||
               ""}
           </h1>
         </div>
@@ -167,9 +170,7 @@ export const ProfilePage: FC = () => {
                     itemCount={combinedData.length}
                     itemSize={76}
                     itemData={combinedData}
-                    onScroll={
-                      hapticFeedback.isSupported() ? handleScroll : undefined
-                    }
+                    onScroll={isHapticSupported ? handleScroll : undefined}
                   >
                     {({ index, style, data }) => {
                       const item = data[index];

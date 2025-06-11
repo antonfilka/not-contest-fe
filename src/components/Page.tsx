@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import {
   hideBackButton,
   onBackButtonClick,
@@ -9,9 +10,11 @@ import { useNavigate } from "react-router";
 export function Page({
   children,
   back = true,
+  className,
 }: PropsWithChildren<{
   // True if it is allowed to go back from this page.
   back?: boolean;
+  className?: string;
 }>) {
   const navigate = useNavigate();
 
@@ -25,5 +28,9 @@ export function Page({
     hideBackButton();
   }, [back]);
 
-  return <>{children}</>;
+  return (
+    <div className={cn("w-full h-full flex flex-col", className)}>
+      {children}
+    </div>
+  );
 }

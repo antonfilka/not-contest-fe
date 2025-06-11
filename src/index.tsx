@@ -1,14 +1,15 @@
 import ReactDOM from "react-dom/client";
 import { StrictMode } from "react";
 import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
-import { Root } from "@/components/Root.tsx";
-import { EnvUnsupported } from "@/components/EnvUnsupported.tsx";
-import { init } from "@/init.ts";
+import { RootWithProviders } from "@/app/RootWithProviders.tsx";
+import { EnvUnsupported } from "@/app/EnvUnsupported.tsx";
+import { init } from "@/app/init.ts";
 
 import "./index.css";
 
 // Mock the environment in case, we are outside Telegram.
-import "./mockEnv.ts";
+import "./app/mockEnv.ts";
+import { preloadImages } from "./app/preloadImages.ts";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -32,12 +33,19 @@ try {
 
   root.render(
     <StrictMode>
-      <Root />
+      <RootWithProviders />
     </StrictMode>,
   );
 
+  const imagesToPreload = Object.values(
+    import.meta.glob("@/assets/**/*.{png,gif,webp}", {
+      eager: true,
+      as: "url",
+    }),
+  );
+  await preloadImages(imagesToPreload);
+
   // Revealing Main App after splashscreen
-  await sleep(50);
   if (splashscreen) splashscreen.classList.add("hide");
   await sleep(1000);
   splashscreen?.remove();

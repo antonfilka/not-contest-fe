@@ -15,13 +15,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import NumberFlow from "@number-flow/react";
 import { useAppStore } from "@/store/appStore";
 import { getCartIsEmpty, getTotalPrice } from "@/lib/cartOperations";
+import useHaptic from "@/hooks/useHaptic";
 
 interface CartDrawerProps extends React.PropsWithChildren {}
 
-const HAPTIC_FORCE = "medium";
-
 const CartDrawer: React.FC<CartDrawerProps> = (props) => {
-  const [open, setOpen] = useState(false);
+  const { mediumHaptic, heavyHaptic } = useHaptic();
+  const isOpened = useAppStore((state) => state.isDrawerOpen);
+  const setOpen = useAppStore((state) => state.setIsDrawerOpen);
+
   const [openedEmpty, setOpenedEmpty] = useState(true);
 
   const paymentStatus = useAppStore((state) => state.paymentStatus);
@@ -35,7 +37,12 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
 
   const onDecrementQuantityClick = useCallback((id: number) => {
     decrementQuantity(Number(id));
-    hapticFeedback.isSupported() && hapticFeedback.impactOccurred(HAPTIC_FORCE);
+    mediumHaptic();
+  }, []);
+
+  const confirmPayment = useCallback(() => {
+    heavyHaptic();
+    setPaymentStatus("pending");
   }, []);
 
   useEffect(() => {
@@ -49,11 +56,11 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
   }, [paymentStatus]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={isOpened} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{props.children}</DrawerTrigger>
       <DrawerContent>
         <div
-          className="relative transition-all duration-200 delay-300 w-full max-w-md mx-auto bg-background mb-[25px]"
+          className="relative transition-all duration-200 delay-300 w-full mx-auto bg-background mb-[25px]"
           style={{
             height: cart.length > 0 ? 116 + cart.length * 72 + "px" : "320px",
           }}
@@ -102,7 +109,7 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
                 initial={{ opacity: 0, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3, delay: openedEmpty ? 0 : 0.4 }}
+                transition={{ duration: 0.3, delay: openedEmpty ? 0 : 0.35 }}
                 className="h-[228px] flex flex-col items-center justify-center gap-[8px]"
               >
                 <p className="text-foreground text-[26px] leading-[32px] font-[600]">
@@ -127,7 +134,7 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
             {!cartIsEmpty && (
               <Button
                 className="w-full bg-foreground text-background font-[600] text-[17px] rounded-[12px] h-[50px]"
-                onClick={() => setPaymentStatus("pending")}
+                onClick={confirmPayment}
                 disabled={paymentStatus === "pending"}
               >
                 {paymentStatus !== "pending" && (

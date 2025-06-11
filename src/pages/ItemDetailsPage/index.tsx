@@ -1,12 +1,13 @@
-import { useCallback, useMemo, useState, type FC } from "react";
-
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+} from "react";
 import { Page } from "@/components/Page.tsx";
 import { useParams } from "react-router";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { A11y } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 import { useCatalogue } from "@/api/queries/useCatalogue";
 import IconButton from "@/components/IconButton";
 import Tag from "@/components/Tag";
@@ -17,16 +18,31 @@ import { useCartStore } from "@/store/cartStore";
 import NumberFlow from "@number-flow/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatWithThousandDots } from "@/lib/utils";
-import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
-
-const HAPTIC_FORCE = "medium";
+import useAppViewportSize from "@/hooks/useAppViewportSize";
+import useEmblaCarousel from "embla-carousel-react";
+import useMockPayment from "@/hooks/useMockPayment";
+import SpottyNotification from "@/components/SpottyNotification";
+import { useSpottyNotification } from "@/hooks/useSpottyNotification";
+import useHaptic from "@/hooks/useHaptic";
+import { useSwipeable } from "react-swipeable";
 
 export const ItemDetailsPage: FC = () => {
+  const { width } = useAppViewportSize();
+  const { mediumHaptic, lightHaptic } = useHaptic();
+
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const params = useParams();
 
-  const wallet = useTonWallet();
-  const [tonConnectUI, setOptions] = useTonConnectUI();
+  const { openConnectWalletModal, wallet } = useMockPayment();
+
+  const { visible, type, triggerNotification } = useSpottyNotification();
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+    dragFree: true,
+    skipSnaps: false,
+  });
 
   const { data = [], isLoading } = useCatalogue();
 
@@ -40,7 +56,7 @@ export const ItemDetailsPage: FC = () => {
     [cart],
   );
   const quantity = useMemo(
-    () => cart.find((i) => i.id === Number(params.id))?.quantity,
+    () => cart.find((i) => i.id === Number(params.id))?.quantity || 0,
     [cart],
   );
 
@@ -57,31 +73,37 @@ export const ItemDetailsPage: FC = () => {
   const onAddToCartClick = useCallback(() => {
     if (currentItem) {
       addToCart(currentItem);
-      hapticFeedback.isSupported() &&
-        hapticFeedback.impactOccurred(HAPTIC_FORCE);
+      mediumHaptic();
     }
   }, [currentItem]);
 
   const onIncrementQuantityClick = useCallback(() => {
     if (currentItem && Number(quantity) !== Number(currentItem.left)) {
       incrementQuantity(Number(params.id));
-
-      hapticFeedback.isSupported() &&
-        hapticFeedback.impactOccurred(HAPTIC_FORCE);
+      mediumHaptic();
     }
   }, [currentItem, quantity]);
 
   const onDecrementQuantityClick = useCallback(() => {
     if (currentItem) {
       decrementQuantity(Number(params.id));
-      hapticFeedback.isSupported() &&
-        hapticFeedback.impactOccurred(HAPTIC_FORCE);
+      mediumHaptic();
     }
   }, [currentItem]);
 
-  const onImageClick = useCallback((index: number) => {
-    setActivePhotoIndex(index);
-  }, []);
+  const onImageClick = useCallback(
+    (index: number) => {
+      setActivePhotoIndex(index);
+      emblaApi?.scrollTo(index - 1, false);
+    },
+    [emblaApi],
+  );
+
+  const handleBuyNowClick = useCallback(() => {
+    if (!isInCart) onAddToCartClick();
+
+    lightHaptic();
+  }, [isInCart, onAddToCartClick]);
 
   const onShareClick = useCallback(() => {
     if (shareURL.isAvailable() && !isLoading) {
@@ -91,6 +113,33 @@ export const ItemDetailsPage: FC = () => {
       );
     }
   }, []);
+
+  const prevQuantityRef = useRef(quantity);
+  useEffect(() => {
+    if (prevQuantityRef.current < 8 && quantity === 8) {
+      triggerNotification("spotty");
+    }
+    prevQuantityRef.current = quantity;
+  }, [quantity]);
+
+  const slidesPerView = (width - 32 - 16) / 100;
+  const slideStyle = {
+    flex: `0 0 calc(100% / ${slidesPerView})`,
+    maxWidth: "100px",
+  };
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (!currentItem?.images) return;
+      if (activePhotoIndex + 1 < currentItem.images.length)
+        onImageClick(activePhotoIndex + 1);
+    },
+    onSwipedRight: () => {
+      if (activePhotoIndex > 0) onImageClick(activePhotoIndex - 1);
+    },
+    preventScrollOnSwipe: true,
+    trackMouse: true, // also allows desktop dragging
+  });
 
   return (
     <Page back={true}>
@@ -113,7 +162,7 @@ export const ItemDetailsPage: FC = () => {
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           {/* Header */}
-          <div className="w-full min-h-[60px] flex items-center justify-between">
+          <div className="w-full min-h-[60px] flex items-center justify-between px-[16px]">
             <h4 className="text-[26px] font-[600]">{currentItem?.name}</h4>
             <IconButton
               icon="share"
@@ -122,11 +171,11 @@ export const ItemDetailsPage: FC = () => {
             />
           </div>
           {/* Description */}
-          <div className="min-h-[44px] w-full flex items-center">
+          <div className="min-h-[44px] w-full flex items-center px-[16px]">
             <p>{currentItem?.description}</p>
           </div>
           {/* Tags */}
-          <div className="min-h-[54px] w-full flex items-center gap-[8px]">
+          <div className="min-h-[54px] w-full flex items-center gap-[8px] px-[16px]">
             <Tag
               value={formatWithThousandDots(currentItem?.price || 0) + " $NOT"}
             />
@@ -135,22 +184,26 @@ export const ItemDetailsPage: FC = () => {
               <Tag key={type} value={value.toLocaleUpperCase()} />
             ))}
           </div>
-          <div className="flex-1 item-details rounded-[20px] overflow-y-auto">
-            <img
-              src={currentItem?.images[activePhotoIndex]}
-              alt={currentItem?.name}
-              className="w-full rounded-[20px]"
-            />
-          </div>
-          <div className="w-full h-[116px] flex items-center">
-            <Swiper
-              spaceBetween={8}
-              slidesPerView={(window.innerWidth - 32 - 16) / 100}
-              modules={[A11y]}
-              className="relative"
+          <div className="relative flex-1 rounded-[20px] overflow-hidden px-[16px]">
+            {/* Scrollable image content */}
+            <div
+              {...handlers}
+              className="relative w-full h-full overflow-y-auto rounded-[20px] z-0"
             >
+              <img
+                src={currentItem?.images[activePhotoIndex]}
+                alt={currentItem?.name}
+                className="w-full rounded-[20px]"
+              />
+            </div>
+          </div>
+          <div
+            className="w-full h-[116px] flex items-center overflow-hidden pl-[16px]"
+            ref={emblaRef}
+          >
+            <div className="flex gap-[8px]">
               {currentItem?.images.map((image, index) => (
-                <SwiperSlide key={image}>
+                <div key={image} style={slideStyle}>
                   <img
                     src={image}
                     onClick={() => onImageClick(index)}
@@ -160,21 +213,22 @@ export const ItemDetailsPage: FC = () => {
                         : "border-transparent"
                     }`}
                   />
-                </SwiperSlide>
+                </div>
               ))}
-            </Swiper>
+            </div>
           </div>
 
           {!isInStock && (
-            <div className="min-h-[58px] flex gap-[12px] items-end mt-auto">
+            <div className="min-h-[58px] flex gap-[12px] items-end mt-auto px-[16px]">
               <Button className="flex-1 text-foreground bg-secondary" disabled>
-                Out of stock
+                Out of nothing
               </Button>
             </div>
           )}
 
           {isInStock && (
-            <div className="min-h-[58px] flex gap-[12px] items-end mt-auto">
+            <div className="relative min-h-[58px] flex gap-[12px] items-end mt-auto px-[16px]">
+              <SpottyNotification visible={visible} type={type} />
               <AnimatePresence mode="wait" initial={false}>
                 {isInCart ? (
                   <motion.div
@@ -231,6 +285,7 @@ export const ItemDetailsPage: FC = () => {
                   <Button
                     className="flex-1 bg-foreground text-background"
                     disabled={currentItem?.left === 0}
+                    onClick={handleBuyNowClick}
                   >
                     Buy now
                   </Button>
@@ -240,7 +295,7 @@ export const ItemDetailsPage: FC = () => {
                 <Button
                   className="flex-1 bg-foreground text-background"
                   disabled={currentItem?.left === 0}
-                  onClick={() => tonConnectUI.openModal()}
+                  onClick={openConnectWalletModal}
                 >
                   Connect Wallet
                 </Button>

@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { useAppStore } from "@/store/appStore";
 import { Button } from "./ui/button";
-import ConfettiImage from "@/assets/confetti.png";
+import ConfettiImage from "@/assets/confetti.gif";
+import Realistic from "react-canvas-confetti/dist/presets/realistic";
 
 const SuccessOverlay = () => {
   const setPaymentStatus = useAppStore((state) => state.setPaymentStatus);
@@ -14,6 +15,7 @@ const SuccessOverlay = () => {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="fixed z-[9999] inset-0 flex flex-col justify-center items-center backdrop-blur-md bg-[rgba(0,0,0,0.5)]"
     >
+      <Realistic autorun={{ speed: 0.3, delay: 3 }} />
       <img
         alt="confetti"
         src={ConfettiImage}
@@ -26,7 +28,7 @@ const SuccessOverlay = () => {
         Your purchase is on the way
       </p>
       <Button
-        className="w-[calc(100%-32px)] h-[50px] bg-white text-black text-[17px] font-[600]"
+        className="w-[calc(100%-32px)] max-w-[668px] h-[50px] bg-white text-black text-[17px] font-[600]"
         onClick={() => setPaymentStatus("none")}
       >
         Awesome

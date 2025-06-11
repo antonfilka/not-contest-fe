@@ -75,11 +75,6 @@
   }
 }
 
-.items-list img {
-  max-width: 100%;
-  contain: layout;
-}
-
 .items-list a.transitioning h4 {
   view-transition-name: itemTitle;
 }

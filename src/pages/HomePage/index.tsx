@@ -1,23 +1,20 @@
-import { useDeferredValue, useEffect, useState, type FC } from "react";
+import { useDeferredValue, useState, type FC } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Page } from "@/components/Page.tsx";
-import ItemCard from "@/components/ItemCard";
+import ItemCard from "@/pages/HomePage/components/ItemCard";
 import { useCatalogue } from "@/api/queries/useCatalogue";
-import HeaderWithSearch from "@/components/HeaderWithSearch";
+import HeaderWithSearch from "@/pages/HomePage/components/HeaderWithSearch";
 
-import NotFoundImg from "@/assets/notFound.png";
+import NotFoundImg from "@/assets/notFound.webp";
 import { useCartStore } from "@/store/cartStore";
+import { useNavigate } from "react-router";
 
 export const HomePage: FC = () => {
   const [inputValue, setInputValue] = useState("");
   const deferredInputValue = useDeferredValue(inputValue);
 
   const { data = [], isLoading } = useCatalogue();
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = NotFoundImg;
-  }, []);
+  const navigate = useNavigate();
 
   const cart = useCartStore((state) => state.items);
 
@@ -30,11 +27,7 @@ export const HomePage: FC = () => {
   const showNotFound = filteredData?.length === 0 && !isLoading;
 
   return (
-    <Page back={false}>
-      <img
-        src={NotFoundImg}
-        className="opacity-0 pointer-events-none absolute z-[-100]"
-      />
+    <Page back={false} className="px-[16px]">
       <motion.div
         className="w-full h-full flex flex-col"
         variants={{
@@ -88,15 +81,33 @@ export const HomePage: FC = () => {
         )}
 
         {filteredData?.length > 0 && !isLoading && (
-          <section className="flex-1 flex flex-wrap gap-x-[12px] gap-y-[28px] overflow-y-auto items-list">
-            <AnimatePresence initial={false}>
-              {filteredData?.map((item) => (
+          <motion.section
+            className="flex-1 flex flex-wrap gap-x-[12px] gap-y-[28px] overflow-y-auto items-list"
+            variants={{
+              hidden: {
+                transition: {
+                  staggerChildren: 0.1,
+                },
+              },
+              visible: {
+                transition: {
+                  staggerChildren: 0.07,
+                },
+              },
+            }}
+            initial="hidden"
+            animate="visible"
+          >
+            <AnimatePresence>
+              {filteredData.map((item) => (
                 <motion.div
                   key={item.id}
                   layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 10 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="relative flex flex-col items-center gap-[8px] w-[calc(50%-6px)] h-fit"
                 >
@@ -106,8 +117,25 @@ export const HomePage: FC = () => {
                   />
                 </motion.div>
               ))}
+              <motion.div
+                layout
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="relative flex flex-col items-center gap-[8px] w-[calc(50%-6px)] h-fit"
+              >
+                <div
+                  className="w-full aspect-square bg-foreground/5 text-foreground rounded-[16px] px-[20px] text-[28px] font-[600] flex items-center justify-center"
+                  onClick={() => navigate("/game")}
+                >
+                  ?
+                </div>
+              </motion.div>
             </AnimatePresence>
-          </section>
+          </motion.section>
         )}
       </motion.div>
     </Page>

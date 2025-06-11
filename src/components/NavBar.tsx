@@ -9,6 +9,8 @@ import CartDrawer from "./CartDrawer";
 import { useCartStore } from "@/store/cartStore";
 import { getCartIsEmpty, getTotalPrice } from "@/lib/cartOperations";
 import { formatWithThousandDots } from "@/lib/utils";
+import { useAppStore } from "@/store/appStore";
+import useHaptic from "@/hooks/useHaptic";
 
 interface NavBarProps {
   isMobile?: boolean;
@@ -17,6 +19,9 @@ interface NavBarProps {
 const NavBar = ({ isMobile = false }: NavBarProps) => {
   const launchParams = useMemo(() => retrieveLaunchParams(), []);
   const location = useLocation();
+  const { lightHaptic } = useHaptic();
+
+  const isDrawerOpen = useAppStore((state) => state.isDrawerOpen);
 
   const cart = useCartStore((state) => state.items);
   const cartIsEmpty = getCartIsEmpty(cart);
@@ -34,16 +39,17 @@ const NavBar = ({ isMobile = false }: NavBarProps) => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 flex items-center justify-center pt-[8px] bg-background"
+      className="absolute bottom-0 left-0 right-0 flex items-center justify-center pt-[8px] bg-background"
       style={{ height: navHeight }}
     >
-      {cartIsEmpty ? (
+      {(cartIsEmpty || isProfilePage) && (
         <>
           {/* Store Link */}
           <NavLink
             to={APP_ROUTES.HOME}
             className="h-full w-[50%] flex flex-col items-center gap-[5px]"
             style={{ opacity: isProfilePage ? 0.6 : 1 }}
+            onClick={lightHaptic}
             viewTransition
             aria-label="Go to Store"
           >
@@ -56,6 +62,7 @@ const NavBar = ({ isMobile = false }: NavBarProps) => {
             to={APP_ROUTES.PROFILE}
             className="h-full w-[50%] flex flex-col items-center gap-[5px]"
             style={{ opacity: isProfilePage ? 1 : 0.6 }}
+            onClick={lightHaptic}
             aria-label="Go to Profile"
           >
             <Avatar>
@@ -70,9 +77,14 @@ const NavBar = ({ isMobile = false }: NavBarProps) => {
             </span>
           </NavLink>
         </>
-      ) : (
+      )}
+
+      {((!cartIsEmpty && !isProfilePage) || (!cartIsEmpty && isDrawerOpen)) && (
         <CartDrawer>
-          <Button className="grow h-[50px] bg-foreground text-background mx-[16px] text-[17px] font-[600] leading-[22px] mb-[34px]">
+          <Button
+            className="grow h-[50px] bg-foreground text-background mx-[16px] text-[17px] font-[600] leading-[22px] mb-[34px]"
+            onClick={lightHaptic}
+          >
             Buy for {formatWithThousandDots(totalPrice)} NOT
           </Button>
         </CartDrawer>
